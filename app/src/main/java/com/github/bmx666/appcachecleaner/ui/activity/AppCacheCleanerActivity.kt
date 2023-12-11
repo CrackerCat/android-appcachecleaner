@@ -1,9 +1,7 @@
 package com.github.bmx666.appcachecleaner.ui.activity
 
-import android.app.SearchManager
 import android.app.StatusBarManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.graphics.drawable.Icon
@@ -13,6 +11,7 @@ import android.os.FileUtils
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.text.format.Formatter
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -22,10 +21,11 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SearchView
-import androidx.compose.runtime.Composable
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.github.bmx666.appcachecleaner.BuildConfig
 import com.github.bmx666.appcachecleaner.R
 import com.github.bmx666.appcachecleaner.config.SharedPreferencesManager
@@ -37,12 +37,16 @@ import com.github.bmx666.appcachecleaner.service.CacheCleanerTileService
 import com.github.bmx666.appcachecleaner.ui.dialog.AlertDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.theme.AppTheme
 import com.github.bmx666.appcachecleaner.ui.compose.ComposeHelp
+import com.github.bmx666.appcachecleaner.ui.compose.HelpScreen
+import com.github.bmx666.appcachecleaner.ui.compose.HomeScreen
+import com.github.bmx666.appcachecleaner.ui.compose.SettingsScreen
 import com.github.bmx666.appcachecleaner.ui.dialog.CustomListDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.FilterListDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.IgnoreAppDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.PermissionDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.fragment.PackageListFragment
 import com.github.bmx666.appcachecleaner.ui.fragment.SettingsFragment
+import com.github.bmx666.appcachecleaner.ui.theme.AppTheme
 import com.github.bmx666.appcachecleaner.util.ActivityHelper
 import com.github.bmx666.appcachecleaner.util.ExtraSearchTextHelper
 import com.github.bmx666.appcachecleaner.util.IIntentActivityCallback
@@ -74,10 +78,10 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
     private var customListName: String? = null
     private var currentPkgListAction = Constant.PackageListAction.DEFAULT
 
-    private lateinit var onMenuHideAll: () -> Unit
-    private lateinit var onMenuShowMain: () -> Unit
-    private lateinit var onMenuShowFilter: () -> Unit
-    private lateinit var onMenuShowSearch: () -> Unit
+    //private lateinit var onMenuHideAll: () -> Unit
+    //private lateinit var onMenuShowMain: () -> Unit
+    //private lateinit var onMenuShowFilter: () -> Unit
+    //private lateinit var onMenuShowSearch: () -> Unit
 
     private lateinit var localBroadcastManager: LocalBroadcastManagerActivityHelper
 
@@ -267,8 +271,25 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
                     .show()
             }
         }
+
+        setContent {
+            AppTheme {
+                val navController = rememberNavController()
+                NavHost(navController = navController,
+                        startDestination = Constant.Navigation.HOME.name,
+                ) {
+                    composable(Constant.Navigation.HOME.name) { HomeScreen(navController) }
+                    composable(Constant.Navigation.HELP.name) { HelpScreen(navController) }
+                    composable(Constant.Navigation.SETTINGS.name) { SettingsScreen(navController) }
+                    //composable("package_list") { PackageListScreen(navController) }
+                    //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    //    showFilterDialog()
+                }
+            }
+        }
     }
 
+    /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu, menu)
@@ -358,33 +379,7 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
         restoreUI()
         return true
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressedDispatcher.onBackPressed()
-                true
-            }
-            R.id.menu_help -> {
-                setContent {
-                    AppTheme {
-                        ComposeHelp()
-                    }
-                }
-                true
-            }
-            R.id.menu_settings -> {
-                showMenuFragment(SettingsFragment.newInstance(), R.string.menu_item_settings)
-                true
-            }
-            R.id.menu_filter -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    showFilterDialog()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+    */
 
     override fun onResume() {
         super.onResume()
@@ -752,21 +747,21 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
     }
 
     private fun updateActionBarTextAndHideMenu(@StringRes resId: Int) {
-        supportActionBar?.setTitle(resId)
+        //supportActionBar?.setTitle(resId)
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        onMenuHideAll()
+        //onMenuHideAll()
     }
 
     private fun updateActionBarFilter(@StringRes resId: Int) {
-        supportActionBar?.setTitle(resId)
+        //supportActionBar?.setTitle(resId)
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        onMenuShowFilter()
+        //onMenuShowFilter()
     }
 
     private fun updateActionBarSearch(title: String?) {
-        supportActionBar?.title = title
+        //supportActionBar?.title = title
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        onMenuShowSearch()
+        //onMenuShowSearch()
     }
 
     private fun updateActionBarSearch(@StringRes resId: Int) {
@@ -776,10 +771,10 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
     }
 
     private fun restoreActionBar() {
-        supportActionBar?.show()
-        supportActionBar?.setTitle(R.string.app_name)
+        //supportActionBar?.show()
+        //supportActionBar?.setTitle(R.string.app_name)
         //supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        onMenuShowMain()
+        //onMenuShowMain()
     }
 
     private fun showMenuFragment(fragment: Fragment, @StringRes title: Int) {
