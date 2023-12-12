@@ -37,6 +37,7 @@ import com.github.bmx666.appcachecleaner.service.CacheCleanerTileService
 import com.github.bmx666.appcachecleaner.ui.dialog.AlertDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.theme.AppTheme
 import com.github.bmx666.appcachecleaner.ui.compose.ComposeHelp
+import com.github.bmx666.appcachecleaner.ui.compose.FirstBootScreen
 import com.github.bmx666.appcachecleaner.ui.compose.HelpScreen
 import com.github.bmx666.appcachecleaner.ui.compose.HomeScreen
 import com.github.bmx666.appcachecleaner.ui.compose.SettingsScreen
@@ -256,7 +257,14 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
         if (calculationCleanedCacheJob?.isActive != true)
             updateMainText(intent.getCharSequenceExtra(ARG_DISPLAY_TEXT))
 
-        checkRequestAddTileService()
+        val startDestination: String
+
+        if (SharedPreferencesManager.FirstBoot.showFirstBootConfirmation(this)) {
+            startDestination = Constant.Navigation.FIRST_BOOT.name
+        } else {
+            startDestination = Constant.Navigation.HOME.name
+            checkRequestAddTileService()
+        }
 
         // Show bugs
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -275,12 +283,32 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
         setContent {
             AppTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController,
-                        startDestination = Constant.Navigation.HOME.name,
+
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination,
                 ) {
-                    composable(Constant.Navigation.HOME.name) { HomeScreen(navController) }
-                    composable(Constant.Navigation.HELP.name) { HelpScreen(navController) }
-                    composable(Constant.Navigation.SETTINGS.name) { SettingsScreen(navController) }
+                    composable(Constant.Navigation.FIRST_BOOT.name) {
+                        FirstBootScreen(
+                            activity = this@AppCacheCleanerActivity,
+                            navController = navController,
+                        )
+                    }
+                    composable(Constant.Navigation.HOME.name) {
+                        HomeScreen(
+                            navController = navController,
+                        )
+                    }
+                    composable(Constant.Navigation.HELP.name) {
+                        HelpScreen(
+                            navController = navController,
+                        )
+                    }
+                    composable(Constant.Navigation.SETTINGS.name) {
+                        SettingsScreen(
+                            navController = navController,
+                        )
+                    }
                     //composable("package_list") { PackageListScreen(navController) }
                     //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     //    showFilterDialog()
