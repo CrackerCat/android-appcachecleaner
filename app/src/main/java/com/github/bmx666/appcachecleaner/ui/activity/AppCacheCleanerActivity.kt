@@ -8,10 +8,6 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.os.FileUtils
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.text.format.Formatter
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -34,13 +30,11 @@ import com.github.bmx666.appcachecleaner.databinding.ActivityMainBinding
 import com.github.bmx666.appcachecleaner.log.Logger
 import com.github.bmx666.appcachecleaner.placeholder.PlaceholderContent
 import com.github.bmx666.appcachecleaner.service.CacheCleanerTileService
-import com.github.bmx666.appcachecleaner.ui.dialog.AlertDialogBuilder
-import com.github.bmx666.appcachecleaner.ui.theme.AppTheme
-import com.github.bmx666.appcachecleaner.ui.compose.ComposeHelp
 import com.github.bmx666.appcachecleaner.ui.compose.FirstBootScreen
 import com.github.bmx666.appcachecleaner.ui.compose.HelpScreen
 import com.github.bmx666.appcachecleaner.ui.compose.HomeScreen
 import com.github.bmx666.appcachecleaner.ui.compose.SettingsScreen
+import com.github.bmx666.appcachecleaner.ui.dialog.AlertDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.CustomListDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.FilterListDialogBuilder
 import com.github.bmx666.appcachecleaner.ui.dialog.IgnoreAppDialogBuilder
@@ -63,7 +57,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.springframework.util.unit.DataSize
 import java.io.File
-import java.util.HashSet
 import java.util.Locale
 
 class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
@@ -264,19 +257,19 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
         } else {
             startDestination = Constant.Navigation.HOME.name
             checkRequestAddTileService()
-        }
 
-        // Show bugs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            if (SharedPreferencesManager.BugWarning.showBug322519674(this)) {
-                AlertDialogBuilder(this)
-                    .setTitle(R.string.title_bug_322519674)
-                    .setMessage(R.string.message_bug_322519674)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        // SharedPreferencesManager.BugWarning.hideBug322519674(this)
-                    }
-                    .create()
-                    .show()
+            // Show bugs
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (SharedPreferencesManager.BugWarning.showBug322519674(this)) {
+                    AlertDialogBuilder(this)
+                        .setTitle(R.string.title_bug_322519674)
+                        .setMessage(R.string.message_bug_322519674)
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            // SharedPreferencesManager.BugWarning.hideBug322519674(this)
+                        }
+                        .create()
+                        .show()
+                }
             }
         }
 
@@ -798,9 +791,9 @@ class AppCacheCleanerActivity : AppCompatActivity(), IIntentActivityCallback {
     }
 
     private fun updateActionBarSearch(@StringRes resId: Int) {
-        supportActionBar?.setTitle(resId)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        onMenuShowSearch()
+        //supportActionBar?.setTitle(resId)
+        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //onMenuShowSearch()
     }
 
     private fun restoreActionBar() {
